@@ -1,0 +1,45 @@
+# Byte-compiled files
+*.pyc
+*.pyo
+__pycache__/
+
+# Virtual environment
+venv/
+.env/
+*.env
+
+# Logs and debugging
+*.log
+debug.log
+
+# Cache files
+*.cache
+*.bak
+*.swp
+
+# IDE configurations
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Python egg files
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Node.js dependencies (if applicable)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# JSON configs
+*.json.backup
+
+# Temporary files
+*.tmp
+*.temp
