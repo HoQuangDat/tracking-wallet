@@ -75,7 +75,7 @@ def send_telegram_notification(message, value, usd_value, tx_hash, blockchain):
     url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage'
     payload = {
         'chat_id': f'{TELEGRAM_CHAT_ID}',
-        'text': f'{message}: {etherscan_link}\nValue: {value:.6f} {blockchain.upper()} (${usd_value:.2f})',
+        'text': f'{message}: {etherscan_link}\Giá trị: {value:.6f} {blockchain.upper()} (${usd_value:.2f})',
         'parse_mode': 'HTML'
     }
     response = requests.post(url, data=payload)
@@ -285,9 +285,9 @@ def monitor_wallets():
                             value = float(tx['value']) / 10**18  # Convert from wei to ETH or BNB
                             usd_value = value * (eth_usd_price if blockchain == 'eth' else bnb_usd_price)  # Calculate value in USD
                             wallet_name = wallet_names.get(wallet_address, "")
-                            message = f'🚨 Incoming transaction detected on {wallet_address} ({wallet_name})'
+                            message = f'🚨 Giao dịch đến được phát hiện trên {wallet_address} của ví {wallet_name}'
                             send_telegram_notification(message, value, usd_value, tx['hash'], blockchain)
-                            print("VALUEEEEEEEEEEEEEE", value)
+                            # print("VALUEEEEEEEEEEEEEE", value)
 
                             # Process specific wallets
                             process_incoming_transaction(wallet_address, value, blockchain)
