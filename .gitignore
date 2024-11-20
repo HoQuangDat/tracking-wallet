@@ -45,3 +45,4 @@ yarn-error.log*
 *.temp
 
 last_run_time.txt
+latest_tx_hashes.json
