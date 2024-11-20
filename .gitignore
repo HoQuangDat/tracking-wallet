@@ -48,3 +48,4 @@ last_run_time.txt
 latest_tx_hashes.json
 nohup.out
 nc_env/
+watched_wallets.txt
