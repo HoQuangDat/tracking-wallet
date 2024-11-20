@@ -36,7 +36,8 @@ transfer_status = {
 wallet_names = {
     POOL_WALLET: "Pool wallet",
     AFF_WALLET: "AFF wallet",
-    MARKETING_WALLET: "MARKETING_WALLET"
+    MARKETING_WALLET: "Marketing wallet",
+    CONTRACT_ADDRESS: "Contract address"
 }
 
 def get_wallet_transactions(wallet_address, blockchain):
