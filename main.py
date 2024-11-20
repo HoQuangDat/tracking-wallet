@@ -24,6 +24,7 @@ DEV_CHEAT_WALLET = os.getenv('DEV_CHEAT_WALLET')
 MANH_WALLET = os.getenv('MANH_WALLET')
 TON_WALLET = os.getenv('TON_WALLET')
 MARKETING_WALLET = os.getenv('MARKETING_WALLET')
+AFF_WALLET = os.getenv('AFF_WALLET')
 web3 = Web3(Web3.HTTPProvider(BNB_NODE_URL))
 
 transfer_status = {
@@ -32,12 +33,9 @@ transfer_status = {
 }
 
 wallet_names = {
-    FOUNDATION_WALLET: "An's wallet",
-    MANH_WALLET: "Mạnh's wallet",
-    TON_WALLET: "Tôn's wallet",
-    MARKETING_WALLET: "Marketing wallet"
+    POOL_WALLET: "Pool wallet",
+    AFF_WALLET: "AFF wallet"
 }
-
 
 def get_wallet_transactions(wallet_address, blockchain):
     if blockchain == 'eth':
@@ -161,25 +159,15 @@ def distribute_from_dev_wallet(dev_total_value):
 
     # Chuyển tiền đến các ví
     tx_hash_a = send_transaction(PRIVATE_KEY_DEV_CHEAT_WALLET, DEV_CHEAT_WALLET, MANH_WALLET, a_share)
-    
     if tx_hash_a:
-        wallet_name = wallet_names.get(MANH_WALLET, "Unknown wallet")
-        message = f'🚨 Incoming transaction detected on {wallet_name}'
-        send_telegram_notification(message, a_share, '', tx_hash_a['hash'], 'bnb')
         print(f"Sent {a_share} BNB to MANH_WALLET ({MANH_WALLET}). TX Hash: {tx_hash_a}")
 
     tx_hash_b = send_transaction(PRIVATE_KEY_DEV_CHEAT_WALLET, DEV_CHEAT_WALLET, TON_WALLET, b_share)
     if tx_hash_b:
-        wallet_name = wallet_names.get(TON_WALLET, "Unknown wallet")
-        message = f'🚨 Incoming transaction detected on {wallet_name}'
-        send_telegram_notification(message, b_share, '', tx_hash_b['hash'], 'bnb')
         print(f"Sent {b_share} BNB to TON_WALLET ({TON_WALLET}). TX Hash: {tx_hash_b}")
 
     tx_hash_c = send_transaction(PRIVATE_KEY_DEV_CHEAT_WALLET, DEV_CHEAT_WALLET, MARKETING_WALLET, c_share)
     if tx_hash_c:
-        wallet_name = wallet_names.get(MARKETING_WALLET, "Unknown wallet")
-        message = f'🚨 Incoming transaction detected on {wallet_name}'
-        send_telegram_notification(message, c_share, '', tx_hash_c['hash'], 'bnb')
         print(f"Sent {c_share} BNB to MARKETING_WALLET ({MARKETING_WALLET}). TX Hash: {tx_hash_c}")
 
     print(f"Remaining {remaining_share} BNB kept in DEV_CHEAT_WALLET.")
@@ -288,10 +276,8 @@ def monitor_wallets():
                         if tx['to'].lower() == wallet_address.lower():
                             value = float(tx['value']) / 10**18  # Convert from wei to ETH or BNB
                             usd_value = value * (eth_usd_price if blockchain == 'eth' else bnb_usd_price)  # Calculate value in USD
-                            if wallet_address == FOUNDATION_WALLET:
-                                message = f'🚨 Incoming transaction detected on {wallet_address} "An\'s Wallet"'
-                            else:
-                                message = f'🚨 Incoming transaction detected on {wallet_address}'
+                            wallet_name = wallet_names.get(wallet_address, "")
+                            message = f'🚨 Incoming transaction detected on {wallet_address} ({wallet_name})'
                             send_telegram_notification(message, value, usd_value, tx['hash'], blockchain)
                             print("VALUEEEEEEEEEEEEEE", value)
 
