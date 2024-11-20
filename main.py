@@ -44,24 +44,40 @@ wallet_names = {
 }
 
 def get_wallet_transactions(wallet_address, blockchain):
+    """
+    Lấy danh sách giao dịch từ ví hoặc internal transactions liên quan đến CONTRACT_ADDRESS.
+    """
     if blockchain == 'eth':
+        # Lấy toàn bộ giao dịch ETH
         url = f'https://api.etherscan.io/api?module=account&action=txlist&address={wallet_address}&sort=desc&apikey={ETHERSCAN_API_KEY}'
-    elif blockchain == 'bnb' and wallet_address != CONTRACT_ADDRESS:
-        url = f'https://api.bscscan.com/api?module=account&action=txlistinternal&address={wallet_address}&sort=desc&apikey={BSCSCAN_API_KEY}'
-    elif blockchain == 'bnb' and wallet_address == CONTRACT_ADDRESS:
-        url = f'https://api.bscscan.com/api?module=account&action=txlist&address={wallet_address}&sort=desc&apikey={BSCSCAN_API_KEY}'
+    elif blockchain == 'bnb':
+        # Nếu địa chỉ là CONTRACT_ADDRESS, lấy toàn bộ giao dịch
+        if wallet_address.lower() == CONTRACT_ADDRESS.lower():
+            url = f'https://api.bscscan.com/api?module=account&action=txlist&address={wallet_address}&sort=desc&apikey={BSCSCAN_API_KEY}'
+        else:
+            # Nếu là ví khác, chỉ lấy internal transactions liên quan đến CONTRACT_ADDRESS
+            url = f'https://api.bscscan.com/api?module=account&action=txlistinternal&address={CONTRACT_ADDRESS}&sort=desc&apikey={BSCSCAN_API_KEY}'
     else:
         raise ValueError('Invalid blockchain specified')
 
     response = requests.get(url)
     data = json.loads(response.text)
 
-    result = data.get('result', [])
-    if not isinstance(result, list):
-        print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Error fetching transactions for {wallet_address} on {blockchain.upper()} blockchain: {data}")
+    if data.get('status') != '1':
+        print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Error fetching transactions for {wallet_address} on {blockchain.upper()} blockchain: {data.get('message')}")
         return []
 
+    result = data.get('result', [])
+    
+    # Nếu đang theo dõi CONTRACT_ADDRESS, lọc các giao dịch liên quan đến ví cụ thể
+    if wallet_address.lower() != CONTRACT_ADDRESS.lower():
+        result = [
+            tx for tx in result
+            if tx.get('to', '').lower() == wallet_address.lower() or tx.get('from', '').lower() == wallet_address.lower()
+        ]
+
     return result
+
 
 
 def send_telegram_notification(message, value, usd_value, tx_hash, blockchain):
@@ -267,19 +283,14 @@ def monitor_wallets():
 
     while True:
         try:
-            # Fetch current ETH and BNB prices in USD from CoinGecko API
-            eth_usd_price_url = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum%2Cbinancecoin&vs_currencies=usd'
-            response = requests.get(eth_usd_price_url)
-            data = json.loads(response.text)
-            eth_usd_price = data['ethereum']['usd']
-            bnb_usd_price = data['binancecoin']['usd']
-
-            # Read from file
+            # Đọc danh sách ví từ file
             with open(file_path, 'r') as f:
                 watched_wallets = set(f.read().splitlines())
 
             for wallet in watched_wallets:
                 blockchain, wallet_address = wallet.split(':')
+
+                # Kiểm tra giao dịch liên quan đến CONTRACT_ADDRESS
                 transactions = get_wallet_transactions(wallet_address, blockchain)
 
                 # Khởi tạo danh sách giao dịch cho từng ví nếu chưa có
@@ -289,20 +300,18 @@ def monitor_wallets():
                 for tx in transactions:
                     tx_hash = tx['hash']
                     tx_time = int(tx['timeStamp'])
+                    # from_address = tx.get('from', '').lower()
+                    # to_address = tx.get('to', '').lower()
+                    value = float(tx.get('value', 0)) / 10**18  # Chuyển từ wei sang BNB
 
-                    # Kiểm tra nếu giao dịch chưa được xử lý cho ví này
+                    # Kiểm tra xem giao dịch đã được xử lý chưa
                     if tx_hash not in latest_tx_hashes[wallet_address] and tx_time > last_run_time:
-                        if tx['to'].lower() == wallet_address.lower():
-                            value = float(tx['value']) / 10**18  # Convert from wei to ETH or BNB
-                            usd_value = value * (eth_usd_price if blockchain == 'eth' else bnb_usd_price)  # Calculate value in USD
-                            wallet_name = wallet_names.get(wallet_address, "Ví không rõ")
-                            message = f'🚨 {wallet_name} ({wallet_address}) đã nhận được giao dịch'
-                            send_telegram_notification(message, value, usd_value, tx['hash'], blockchain)
+                        # Gửi thông báo Telegram nếu có giao dịch liên quan đến ví đang theo dõi
+                        wallet_name = wallet_names.get(wallet_address, "Ví không rõ")
+                        message = f'🚨 {wallet_name} ({wallet_address}) đã nhận được giao dịch'
+                        send_telegram_notification(message, value, 0, tx_hash, blockchain)
 
-                            # Process specific wallets
-                            process_incoming_transaction(wallet_address, value, blockchain)
-
-                        # Lưu giao dịch đã xử lý cho ví này
+                        # Lưu giao dịch đã xử lý
                         latest_tx_hashes[wallet_address].append(tx_hash)
 
             # Save latest_tx_hashes to file
@@ -316,10 +325,11 @@ def monitor_wallets():
 
             # Sleep for 1 minute
             time.sleep(60)
+
         except Exception as e:
             print(f'An error occurred: {e}')
-            # Sleep for 10 seconds before trying again
             time.sleep(10)
+
 
 
 
