@@ -43,9 +43,9 @@ wallet_names = {
 def get_wallet_transactions(wallet_address, blockchain):
     if blockchain == 'eth':
         url = f'https://api.etherscan.io/api?module=account&action=txlist&address={wallet_address}&sort=desc&apikey={ETHERSCAN_API_KEY}'
-    elif blockchain == 'bnb' & wallet_address != CONTRACT_ADDRESS:
+    elif blockchain == 'bnb' and wallet_address != CONTRACT_ADDRESS:
         url = f'https://api.bscscan.com/api?module=account&action=txlistinternal&address={wallet_address}&sort=desc&apikey={BSCSCAN_API_KEY}'
-    elif blockchain == 'bnb' & wallet_address == CONTRACT_ADDRESS:
+    elif blockchain == 'bnb' and wallet_address == CONTRACT_ADDRESS:
         url = f'https://api.bscscan.com/api?module=account&action=txlist&address={wallet_address}&sort=desc&apikey={BSCSCAN_API_KEY}'
     else:
         raise ValueError('Invalid blockchain specified')
