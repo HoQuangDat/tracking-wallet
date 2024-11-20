@@ -37,7 +37,7 @@ transfer_status = {
 
 wallet_names = {
     POOL_WALLET: "Ví Pool",
-    AFF_WALLET: "Ví AFF",
+    AFF_WALLET: "Ví Affiliate",
     MARKETING_WALLET: "Ví Marketing",
     CONTRACT_ADDRESS: "Contract",
     ECOSYSTEM_WALLET: "Ví Ecosystem"
