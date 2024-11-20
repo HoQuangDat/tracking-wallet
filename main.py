@@ -25,6 +25,7 @@ MANH_WALLET = os.getenv('MANH_WALLET')
 TON_WALLET = os.getenv('TON_WALLET')
 MARKETING_WALLET = os.getenv('MARKETING_WALLET')
 AFF_WALLET = os.getenv('AFF_WALLET')
+CONTRACT_ADDRESS = os.getenv('CONTRACT_ADDRESS')
 web3 = Web3(Web3.HTTPProvider(BNB_NODE_URL))
 
 transfer_status = {
@@ -34,7 +35,8 @@ transfer_status = {
 
 wallet_names = {
     POOL_WALLET: "Pool wallet",
-    AFF_WALLET: "AFF wallet"
+    AFF_WALLET: "AFF wallet",
+    MARKETING_WALLET: "MARKETING_WALLET"
 }
 
 def get_wallet_transactions(wallet_address, blockchain):
