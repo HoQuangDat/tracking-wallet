@@ -36,11 +36,11 @@ transfer_status = {
 }
 
 wallet_names = {
-    POOL_WALLET: "Pool wallet",
-    AFF_WALLET: "AFF wallet",
-    MARKETING_WALLET: "Marketing wallet",
-    CONTRACT_ADDRESS: "Contract address",
-    ECOSYSTEM_WALLET: "Ecosystem wallet"
+    POOL_WALLET: "Ví Pool",
+    AFF_WALLET: "Ví AFF",
+    MARKETING_WALLET: "Ví Marketing",
+    CONTRACT_ADDRESS: "Contract",
+    ECOSYSTEM_WALLET: "Ví Ecosystem"
 }
 
 def get_wallet_transactions(wallet_address, blockchain):
@@ -66,20 +66,20 @@ def get_wallet_transactions(wallet_address, blockchain):
 
 def send_telegram_notification(message, value, usd_value, tx_hash, blockchain):
     if blockchain == 'eth':
-        etherscan_link = f'<a href="https://etherscan.io/tx/{tx_hash}">Etherscan</a>'
+        etherscan_link = f'<a href="https://etherscan.io/tx/{tx_hash}"></a>'
     elif blockchain == 'bnb':
-        etherscan_link = f'<a href="https://bscscan.com/tx/{tx_hash}">BscScan</a>'
+        etherscan_link = f'<a href="https://bscscan.com/tx/{tx_hash}"></a>'
     else:
         raise ValueError('Invalid blockchain specified')
 
     url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage'
     payload = {
         'chat_id': f'{TELEGRAM_CHAT_ID}',
-        'text': f'{message}: {etherscan_link}\Giá trị: {value:.6f} {blockchain.upper()} (${usd_value:.2f})',
+        'text': f'{message}: {value:.6f} {blockchain.upper()} (${usd_value:.2f}) {etherscan_link}',
         'parse_mode': 'HTML'
     }
     response = requests.post(url, data=payload)
-    print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Telegram notification sent with message: {message}, value: {value} {blockchain.upper()} (${usd_value:.2f})")
+    # print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Telegram notification sent with message: {message}, value: {value} {blockchain.upper()} (${usd_value:.2f})")
     return response
 
 
@@ -109,7 +109,7 @@ def send_transaction(private_key, from_wallet, to_wallet, amount):
         tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
         
         # Log giao dịch thành công
-        print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Transaction sent. TX Hash: {tx_hash.hex()}")
+        # print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Transaction sent. TX Hash: {tx_hash.hex()}")
 
         # Gửi thông báo Telegram
         # send_telegram_notification(
@@ -163,22 +163,26 @@ def distribute_from_dev_wallet(dev_total_value):
     c_share = dev_total_value * 0.025  # 2.5%
     remaining_share = dev_total_value * 0.01  # 1%
 
-    print(f"Distributing DEV_CHEAT funds: A={a_share} BNB, B={b_share} BNB, C={c_share} BNB, Remaining={remaining_share} BNB")
+    # print(f"Distributing DEV_CHEAT funds: A={a_share} BNB, B={b_share} BNB, C={c_share} BNB, Remaining={remaining_share} BNB")
 
     # Chuyển tiền đến các ví
-    tx_hash_a = send_transaction(PRIVATE_KEY_DEV_CHEAT_WALLET, DEV_CHEAT_WALLET, MANH_WALLET, a_share)
-    if tx_hash_a:
-        print(f"Sent {a_share} BNB to MANH_WALLET ({MANH_WALLET}). TX Hash: {tx_hash_a}")
+    send_transaction(PRIVATE_KEY_DEV_CHEAT_WALLET, DEV_CHEAT_WALLET, MANH_WALLET, a_share)
+    send_transaction(PRIVATE_KEY_DEV_CHEAT_WALLET, DEV_CHEAT_WALLET, TON_WALLET, b_share)
+    send_transaction(PRIVATE_KEY_DEV_CHEAT_WALLET, DEV_CHEAT_WALLET, MARKETING_WALLET, c_share)
+    
+    # tx_hash_a = send_transaction(PRIVATE_KEY_DEV_CHEAT_WALLET, DEV_CHEAT_WALLET, MANH_WALLET, a_share)
+    # if tx_hash_a:
+    #     print(f"Sent {a_share} BNB to MANH_WALLET ({MANH_WALLET}). TX Hash: {tx_hash_a}")
 
-    tx_hash_b = send_transaction(PRIVATE_KEY_DEV_CHEAT_WALLET, DEV_CHEAT_WALLET, TON_WALLET, b_share)
-    if tx_hash_b:
-        print(f"Sent {b_share} BNB to TON_WALLET ({TON_WALLET}). TX Hash: {tx_hash_b}")
+    # tx_hash_b = send_transaction(PRIVATE_KEY_DEV_CHEAT_WALLET, DEV_CHEAT_WALLET, TON_WALLET, b_share)
+    # if tx_hash_b:
+    #     print(f"Sent {b_share} BNB to TON_WALLET ({TON_WALLET}). TX Hash: {tx_hash_b}")
 
-    tx_hash_c = send_transaction(PRIVATE_KEY_DEV_CHEAT_WALLET, DEV_CHEAT_WALLET, MARKETING_WALLET, c_share)
-    if tx_hash_c:
-        print(f"Sent {c_share} BNB to MARKETING_WALLET ({MARKETING_WALLET}). TX Hash: {tx_hash_c}")
+    # tx_hash_c = send_transaction(PRIVATE_KEY_DEV_CHEAT_WALLET, DEV_CHEAT_WALLET, MARKETING_WALLET, c_share)
+    # if tx_hash_c:
+    #     print(f"Sent {c_share} BNB to MARKETING_WALLET ({MARKETING_WALLET}). TX Hash: {tx_hash_c}")
 
-    print(f"Remaining {remaining_share} BNB kept in DEV_CHEAT_WALLET.")
+    # print(f"Remaining {remaining_share} BNB kept in DEV_CHEAT_WALLET.")
     
 def process_incoming_transaction(wallet_address, value, blockchain):
     """
@@ -195,7 +199,7 @@ def process_incoming_transaction(wallet_address, value, blockchain):
         # Chuyển dư thừa 5% từ FOUNDATION_WALLET sang DEV_CHEAT_WALLET
         tx_hash = send_transaction(private_key, FOUNDATION_WALLET, DEV_CHEAT_WALLET, foundation_to_dev)
         if tx_hash:
-            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Transferred {foundation_to_dev} BNB from FOUNDATION_WALLET to DEV_CHEAT_WALLET. TX Hash: {tx_hash}")
+            # print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Transferred {foundation_to_dev} BNB from FOUNDATION_WALLET to DEV_CHEAT_WALLET. TX Hash: {tx_hash}")
             transfer_status["foundation_to_dev"] = foundation_to_dev
         else:
             print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Failed to transfer {foundation_to_dev} BNB from FOUNDATION_WALLET to DEV_CHEAT_WALLET.")
@@ -209,7 +213,7 @@ def process_incoming_transaction(wallet_address, value, blockchain):
         # Chuyển dư thừa 12.5% từ POOL_WALLET sang DEV_CHEAT_WALLET
         tx_hash = send_transaction(private_key, POOL_WALLET, DEV_CHEAT_WALLET, pool_to_dev)
         if tx_hash:
-            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Transferred {pool_to_dev} BNB from POOL_WALLET to DEV_CHEAT_WALLET. TX Hash: {tx_hash}")
+            # print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Transferred {pool_to_dev} BNB from POOL_WALLET to DEV_CHEAT_WALLET. TX Hash: {tx_hash}")
             transfer_status["pool_to_dev"] = pool_to_dev
         else:
             print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Failed to transfer {pool_to_dev} BNB from POOL_WALLET to DEV_CHEAT_WALLET.")
@@ -232,7 +236,7 @@ def process_incoming_transaction(wallet_address, value, blockchain):
         )
 
         # Log tổng giá trị
-        print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Total Value in DEV_CHEAT (27.5%): {total_dev_value}")
+        # print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Total Value in DEV_CHEAT (27.5%): {total_dev_value}")
 
         # Phân phối sau khi DEV_CHEAT nhận đủ tiền
         distribute_from_dev_wallet(total_dev_value)
@@ -285,7 +289,7 @@ def monitor_wallets():
                             value = float(tx['value']) / 10**18  # Convert from wei to ETH or BNB
                             usd_value = value * (eth_usd_price if blockchain == 'eth' else bnb_usd_price)  # Calculate value in USD
                             wallet_name = wallet_names.get(wallet_address, "")
-                            message = f'🚨 Giao dịch đến được phát hiện trên {wallet_address} của ví {wallet_name}'
+                            message = f'🚨 {wallet_name} ( {wallet_address} ) đã nhận được'
                             send_telegram_notification(message, value, usd_value, tx['hash'], blockchain)
                             # print("VALUEEEEEEEEEEEEEE", value)
 
