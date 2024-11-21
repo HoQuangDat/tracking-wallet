@@ -307,15 +307,18 @@ def monitor_wallets():
 
                     # Kiểm tra xem giao dịch đã được xử lý chưa
                     if tx_hash not in latest_tx_hashes[wallet_address] and tx_time > last_run_time:
-                        # Gửi thông báo Telegram nếu có giao dịch liên quan đến ví đang theo dõi
-                        wallet_info = wallet_names.get(wallet_address, {"name": "Ví không rõ", "percentage": 0})
-                        wallet_name = wallet_info["name"]
-                        wallet_percentage = wallet_info["percentage"]
-                        message = f'🚨 {wallet_name} ({wallet_address}) đã nhận được giao dịch {wallet_percentage}%'
-                        send_telegram_notification(message, value, 0, tx_hash, blockchain)
+                        if wallet_address == FOUNDATION_VI:
+                            process_incoming_transaction(wallet_address, value, blockchain)
+                        else:
+                            # Gửi thông báo Telegram nếu có giao dịch liên quan đến ví đang theo dõi
+                            wallet_info = wallet_names.get(wallet_address, {"name": "Ví Contract", "percentage": 0})
+                            wallet_name = wallet_info["name"]
+                            wallet_percentage = wallet_info["percentage"]
+                            message = f'🚨 {wallet_name} ({wallet_address}) đã nhận được giao dịch {wallet_percentage}%'
+                            send_telegram_notification(message, value, 0, tx_hash, blockchain)
 
-                        process_incoming_transaction(wallet_address, value, blockchain)
-                        # Lưu giao dịch đã xử lý
+                            process_incoming_transaction(wallet_address, value, blockchain)
+                            # Lưu giao dịch đã xử lý
                         latest_tx_hashes[wallet_address].append(tx_hash)
 
             # Save latest_tx_hashes to file
