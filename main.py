@@ -319,6 +319,8 @@ def monitor_wallets():
                         # print("WALLET", wallet_info)
                         if wallet_percentage:
                             message = f'🚨 {wallet_name} ({wallet_percentage}) {wallet_address} đã nhận được giao dịch'
+                        elif wallet_name == FOUNDATION_VI:
+                            print(f"Skipping notification for {wallet_name} ({wallet_address})")
                         else:
                             message = f'🚨 {wallet_name} {wallet_address} đã nhận được giao dịch'
                         send_telegram_notification(message, value, 0, tx_hash, blockchain)
