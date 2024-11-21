@@ -316,7 +316,7 @@ def monitor_wallets():
                         wallet_info = wallet_names.get(wallet_address, {"name": "Ví Contract", "percentage": 0})
                         wallet_name = wallet_info["name"]
                         wallet_percentage = wallet_info["percentage"]
-                        message = f'🚨 {wallet_name} ({wallet_address}) {wallet_percentage} đã nhận được giao dịch '
+                        message = f'🚨 {wallet_name} ({wallet_percentage}) {wallet_address} đã nhận được giao dịch '
                         send_telegram_notification(message, value, 0, tx_hash, blockchain)
 
                         process_incoming_transaction(wallet_address, value, blockchain)
