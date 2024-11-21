@@ -41,7 +41,7 @@ wallet_names = {
     AFF_VI: {"name": "Ví Affiliate", "percentage": "18%"},  
     MARKETING_VI: {"name": "Ví Marketing", "percentage": "3%"},
     CONTRACT_ADDRESS: {"name": "Contract", "percentage": "100%"},
-    ECOSYSTEM_VI: {"name": "Ví Ecosystem", "percentage": "3%"}, 
+    ECOSYSTEM_VI: {"name": "Ví Ecosystem", "percentage": "10%"}, 
     TOTAL_COMMISSION_WALLET: {"name": "Ví hoa hồng tổng", "percentage": ""}, 
 }
 
@@ -313,9 +313,10 @@ def monitor_wallets():
                         #     process_incoming_transaction(wallet_address, value, blockchain)
                         # else:
                         # Gửi thông báo Telegram nếu có giao dịch liên quan đến ví đang theo dõi
-                        wallet_info = wallet_names.get(wallet_address, {"name": "Ví Contract", "percentage": ''})
+                        wallet_info = wallet_names.get(Web3.to_checksum_address(wallet_address), {"name": "Ví", "percentage": ''})
                         wallet_name = wallet_info["name"]
                         wallet_percentage = wallet_info["percentage"]
+                        # print("WALLET", wallet_info)
                         if wallet_percentage:
                             message = f'🚨 {wallet_name} ({wallet_percentage}) {wallet_address} đã nhận được giao dịch'
                         else:
