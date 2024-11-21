@@ -36,12 +36,13 @@ transfer_status = {
 }
 
 wallet_names = {
-    POOL_VI: "Ví Pool",
-    AFF_VI: "Ví Affiliate",
-    MARKETING_VI: "Ví Marketing",
-    CONTRACT_ADDRESS: "Contract",
-    ECOSYSTEM_VI: "Ví Ecosystem"
+    POOL_VI: {"name": "Ví Pool", "percentage": 27.5},
+    AFF_VI: {"name": "Ví Affiliate", "percentage": 18},  
+    MARKETING_VI: {"name": "Ví Marketing", "percentage": 3},
+    CONTRACT_ADDRESS: {"name": "Contract", "percentage": 100},
+    ECOSYSTEM_VI: {"name": "Ví Ecosystem", "percentage": 3} 
 }
+
 
 def get_wallet_transactions(wallet_address, blockchain):
     """
@@ -307,10 +308,13 @@ def monitor_wallets():
                     # Kiểm tra xem giao dịch đã được xử lý chưa
                     if tx_hash not in latest_tx_hashes[wallet_address] and tx_time > last_run_time:
                         # Gửi thông báo Telegram nếu có giao dịch liên quan đến ví đang theo dõi
-                        wallet_name = wallet_names.get(wallet_address, "Ví Contract")
-                        message = f'🚨 {wallet_name} ({wallet_address}) đã nhận được giao dịch'
+                        wallet_info = wallet_names.get(wallet_address, {"name": "Ví không rõ", "percentage": 0})
+                        wallet_name = wallet_info["name"]
+                        wallet_percentage = wallet_info["percentage"]
+                        message = f'🚨 {wallet_name} ({wallet_address}) đã nhận được giao dịch {wallet_percentage}%'
                         send_telegram_notification(message, value, 0, tx_hash, blockchain)
 
+                        process_incoming_transaction(wallet_address, value, blockchain)
                         # Lưu giao dịch đã xử lý
                         latest_tx_hashes[wallet_address].append(tx_hash)
 
