@@ -27,6 +27,7 @@ MARKETING_VI = os.getenv('MARKETING_VI')
 AFF_VI = os.getenv('AFF_VI')
 CONTRACT_ADDRESS = os.getenv('CONTRACT_ADDRESS')
 ECOSYSTEM_VI = os.getenv('ECOSYSTEM_VI')
+TOTAL_COMMISSION_WALLET = os.getenv('TOTAL_COMMISSION_WALLET')
 
 web3 = Web3(Web3.HTTPProvider(BNB_NODE_URL))
 
@@ -36,11 +37,12 @@ transfer_status = {
 }
 
 wallet_names = {
-    POOL_VI: {"name": "Ví Pool", "percentage": 27.5},
-    AFF_VI: {"name": "Ví Affiliate", "percentage": 18},  
-    MARKETING_VI: {"name": "Ví Marketing", "percentage": 3},
-    CONTRACT_ADDRESS: {"name": "Contract", "percentage": 100},
-    ECOSYSTEM_VI: {"name": "Ví Ecosystem", "percentage": 3} 
+    POOL_VI: {"name": "Ví Pool", "percentage":  "27.5%"},
+    AFF_VI: {"name": "Ví Affiliate", "percentage": "18%"},  
+    MARKETING_VI: {"name": "Ví Marketing", "percentage": "3%"},
+    CONTRACT_ADDRESS: {"name": "Contract", "percentage": "100%"},
+    ECOSYSTEM_VI: {"name": "Ví Ecosystem", "percentage": "3%"}, 
+    TOTAL_COMMISSION_WALLET: {"name": "Ví hoa hồng tổng", "percentage": ""}, 
 }
 
 
@@ -314,7 +316,7 @@ def monitor_wallets():
                         wallet_info = wallet_names.get(wallet_address, {"name": "Ví Contract", "percentage": 0})
                         wallet_name = wallet_info["name"]
                         wallet_percentage = wallet_info["percentage"]
-                        message = f'🚨 {wallet_name} ({wallet_address}) {wallet_percentage}% đã nhận được giao dịch '
+                        message = f'🚨 {wallet_name} ({wallet_address}) {wallet_percentage} đã nhận được giao dịch '
                         send_telegram_notification(message, value, 0, tx_hash, blockchain)
 
                         process_incoming_transaction(wallet_address, value, blockchain)
