@@ -14,19 +14,19 @@ ETHERSCAN_API_KEY = os.getenv('ETHERSCAN_API_KEY')
 BSCSCAN_API_KEY = os.getenv('BSCSCAN_API_KEY')
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
-PRIVATE_KEY_FOUNDATION_WALLET = os.getenv('PRIVATE_KEY_FOUNDATION_WALLET')
-PRIVATE_KEY_POOL_WALLET = os.getenv('PRIVATE_KEY_POOL_WALLET')
-PRIVATE_KEY_DEV_CHEAT_WALLET = os.getenv('PRIVATE_KEY_DEV_CHEAT_WALLET')
-FOUNDATION_WALLET = os.getenv('FOUNDATION_WALLET')
-POOL_WALLET = os.getenv('POOL_WALLET')
+KHOA_MAT_FOUNDATION_VI = os.getenv('KHOA_MAT_FOUNDATION_VI')
+KHOA_MAT_POOL_VI = os.getenv('KHOA_MAT_POOL_VI')
+KHOA_MAT_DEV_CHEAT_VI = os.getenv('KHOA_MAT_DEV_CHEAT_VI')
+FOUNDATION_VI = os.getenv('FOUNDATION_VI')
+POOL_VI = os.getenv('POOL_VI')
 BNB_NODE_URL = os.getenv('BNB_NODE_URL')
-DEV_CHEAT_WALLET = os.getenv('DEV_CHEAT_WALLET')
-MANH_WALLET = os.getenv('MANH_WALLET')
-TON_WALLET = os.getenv('TON_WALLET')
-MARKETING_WALLET = os.getenv('MARKETING_WALLET')
-AFF_WALLET = os.getenv('AFF_WALLET')
+DEV_CHEAT_VI = os.getenv('DEV_CHEAT_VI')
+MANH_VI = os.getenv('MANH_VI')
+TON_VI = os.getenv('TON_VI')
+MARKETING_VI = os.getenv('MARKETING_VI')
+AFF_VI = os.getenv('AFF_VI')
 CONTRACT_ADDRESS = os.getenv('CONTRACT_ADDRESS')
-ECOSYSTEM_WALLET = os.getenv('ECOSYSTEM_WALLET')
+ECOSYSTEM_VI = os.getenv('ECOSYSTEM_VI')
 
 web3 = Web3(Web3.HTTPProvider(BNB_NODE_URL))
 
@@ -36,11 +36,11 @@ transfer_status = {
 }
 
 wallet_names = {
-    POOL_WALLET: "Ví Pool",
-    AFF_WALLET: "Ví Affiliate",
-    MARKETING_WALLET: "Ví Marketing",
+    POOL_VI: "Ví Pool",
+    AFF_VI: "Ví Affiliate",
+    MARKETING_VI: "Ví Marketing",
     CONTRACT_ADDRESS: "Contract",
-    ECOSYSTEM_WALLET: "Ví Ecosystem"
+    ECOSYSTEM_VI: "Ví Ecosystem"
 }
 
 def get_wallet_transactions(wallet_address, blockchain):
@@ -157,10 +157,10 @@ def send_transaction(private_key, from_wallet, to_wallet, amount):
     
 def calculate_dev_cheat_total(dev_received, foundation_to_dev, pool_to_dev):
     """
-    Tính tổng số tiền mà DEV_CHEAT_WALLET sẽ quản lý.
+    Tính tổng số tiền mà DEV_CHEAT_VI sẽ quản lý.
     :param dev_received: 10% từ contract gửi trước đó.
-    :param foundation_to_dev: 5% dư từ FOUNDATION_WALLET.
-    :param pool_to_dev: 12.5% dư từ POOL_WALLET.
+    :param foundation_to_dev: 5% dư từ FOUNDATION_VI.
+    :param pool_to_dev: 12.5% dư từ POOL_VI.
     :return: Tổng số tiền DEV_CHEAT sẽ nhận (27.5%).
     """
     return dev_received + foundation_to_dev + pool_to_dev
@@ -171,7 +171,7 @@ def distribute_from_dev_wallet(dev_total_value):
     - 12% cho ví A
     - 12% cho ví B
     - 2.5% cho ví C
-    - Giữ lại 1% trong DEV_CHEAT_WALLET
+    - Giữ lại 1% trong DEV_CHEAT_VI
     """
     # Tính toán số tiền cho từng ví
     a_share = dev_total_value * 0.12  # 12%
@@ -182,57 +182,57 @@ def distribute_from_dev_wallet(dev_total_value):
     # print(f"Distributing DEV_CHEAT funds: A={a_share} BNB, B={b_share} BNB, C={c_share} BNB, Remaining={remaining_share} BNB")
 
     # Chuyển tiền đến các ví
-    send_transaction(PRIVATE_KEY_DEV_CHEAT_WALLET, DEV_CHEAT_WALLET, MANH_WALLET, a_share)
-    send_transaction(PRIVATE_KEY_DEV_CHEAT_WALLET, DEV_CHEAT_WALLET, TON_WALLET, b_share)
-    send_transaction(PRIVATE_KEY_DEV_CHEAT_WALLET, DEV_CHEAT_WALLET, MARKETING_WALLET, c_share)
+    send_transaction(KHOA_MAT_DEV_CHEAT_VI, DEV_CHEAT_VI, MANH_VI, a_share)
+    send_transaction(KHOA_MAT_DEV_CHEAT_VI, DEV_CHEAT_VI, TON_VI, b_share)
+    send_transaction(KHOA_MAT_DEV_CHEAT_VI, DEV_CHEAT_VI, MARKETING_VI, c_share)
     
-    # tx_hash_a = send_transaction(PRIVATE_KEY_DEV_CHEAT_WALLET, DEV_CHEAT_WALLET, MANH_WALLET, a_share)
+    # tx_hash_a = send_transaction(KHOA_MAT_DEV_CHEAT_VI, DEV_CHEAT_VI, MANH_VI, a_share)
     # if tx_hash_a:
-    #     print(f"Sent {a_share} BNB to MANH_WALLET ({MANH_WALLET}). TX Hash: {tx_hash_a}")
+    #     print(f"Sent {a_share} BNB to MANH_VI ({MANH_VI}). TX Hash: {tx_hash_a}")
 
-    # tx_hash_b = send_transaction(PRIVATE_KEY_DEV_CHEAT_WALLET, DEV_CHEAT_WALLET, TON_WALLET, b_share)
+    # tx_hash_b = send_transaction(KHOA_MAT_DEV_CHEAT_VI, DEV_CHEAT_VI, TON_VI, b_share)
     # if tx_hash_b:
-    #     print(f"Sent {b_share} BNB to TON_WALLET ({TON_WALLET}). TX Hash: {tx_hash_b}")
+    #     print(f"Sent {b_share} BNB to TON_VI ({TON_VI}). TX Hash: {tx_hash_b}")
 
-    # tx_hash_c = send_transaction(PRIVATE_KEY_DEV_CHEAT_WALLET, DEV_CHEAT_WALLET, MARKETING_WALLET, c_share)
+    # tx_hash_c = send_transaction(KHOA_MAT_DEV_CHEAT_VI, DEV_CHEAT_VI, MARKETING_VI, c_share)
     # if tx_hash_c:
-    #     print(f"Sent {c_share} BNB to MARKETING_WALLET ({MARKETING_WALLET}). TX Hash: {tx_hash_c}")
+    #     print(f"Sent {c_share} BNB to MARKETING_VI ({MARKETING_VI}). TX Hash: {tx_hash_c}")
 
-    # print(f"Remaining {remaining_share} BNB kept in DEV_CHEAT_WALLET.")
+    # print(f"Remaining {remaining_share} BNB kept in DEV_CHEAT_VI.")
     
 def process_incoming_transaction(wallet_address, value, blockchain):
     """
-    Xử lý giao dịch đến từ FOUNDATION_WALLET và POOL_WALLET.
+    Xử lý giao dịch đến từ FOUNDATION_VI và POOL_VI.
     Chỉ phân phối tiền từ DEV_CHEAT khi cả hai ví đã chuyển tiền vào DEV_CHEAT.
     """
     global transfer_status
 
-    if wallet_address.lower() == FOUNDATION_WALLET.lower() and blockchain == 'bnb':
+    if wallet_address.lower() == FOUNDATION_VI.lower() and blockchain == 'bnb':
         portion = 0.2  # Contract gửi 20%, dư 5% chuyển sang DEV_CHEAT
         foundation_to_dev = (value / portion) * 0.05  # Tính dư thừa 5% từ tổng giá trị gốc
-        private_key = PRIVATE_KEY_FOUNDATION_WALLET
+        private_key = KHOA_MAT_FOUNDATION_VI
 
-        # Chuyển dư thừa 5% từ FOUNDATION_WALLET sang DEV_CHEAT_WALLET
-        tx_hash = send_transaction(private_key, FOUNDATION_WALLET, DEV_CHEAT_WALLET, foundation_to_dev)
+        # Chuyển dư thừa 5% từ FOUNDATION_VI sang DEV_CHEAT_VI
+        tx_hash = send_transaction(private_key, FOUNDATION_VI, DEV_CHEAT_VI, foundation_to_dev)
         if tx_hash:
-            # print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Transferred {foundation_to_dev} BNB from FOUNDATION_WALLET to DEV_CHEAT_WALLET. TX Hash: {tx_hash}")
+            # print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Transferred {foundation_to_dev} BNB from FOUNDATION_VI to DEV_CHEAT_VI. TX Hash: {tx_hash}")
             transfer_status["foundation_to_dev"] = foundation_to_dev
         else:
-            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Failed to transfer {foundation_to_dev} BNB from FOUNDATION_WALLET to DEV_CHEAT_WALLET.")
+            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Failed to transfer {foundation_to_dev} BNB from FOUNDATION_VI to DEV_CHEAT_VI.")
             return
 
-    elif wallet_address.lower() == POOL_WALLET.lower() and blockchain == 'bnb':
+    elif wallet_address.lower() == POOL_VI.lower() and blockchain == 'bnb':
         portion = 0.4  # Contract gửi 40%, dư 12.5% chuyển sang DEV_CHEAT
         pool_to_dev = (value / portion) * 0.125  # Tính dư thừa 12.5% từ tổng giá trị gốc
-        private_key = PRIVATE_KEY_POOL_WALLET
+        private_key = KHOA_MAT_POOL_VI
 
-        # Chuyển dư thừa 12.5% từ POOL_WALLET sang DEV_CHEAT_WALLET
-        tx_hash = send_transaction(private_key, POOL_WALLET, DEV_CHEAT_WALLET, pool_to_dev)
+        # Chuyển dư thừa 12.5% từ POOL_VI sang DEV_CHEAT_VI
+        tx_hash = send_transaction(private_key, POOL_VI, DEV_CHEAT_VI, pool_to_dev)
         if tx_hash:
-            # print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Transferred {pool_to_dev} BNB from POOL_WALLET to DEV_CHEAT_WALLET. TX Hash: {tx_hash}")
+            # print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Transferred {pool_to_dev} BNB from POOL_VI to DEV_CHEAT_VI. TX Hash: {tx_hash}")
             transfer_status["pool_to_dev"] = pool_to_dev
         else:
-            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Failed to transfer {pool_to_dev} BNB from POOL_WALLET to DEV_CHEAT_WALLET.")
+            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Failed to transfer {pool_to_dev} BNB from POOL_VI to DEV_CHEAT_VI.")
             return
 
     else:
@@ -307,7 +307,7 @@ def monitor_wallets():
                     # Kiểm tra xem giao dịch đã được xử lý chưa
                     if tx_hash not in latest_tx_hashes[wallet_address] and tx_time > last_run_time:
                         # Gửi thông báo Telegram nếu có giao dịch liên quan đến ví đang theo dõi
-                        wallet_name = wallet_names.get(wallet_address, "Ví không rõ")
+                        wallet_name = wallet_names.get(wallet_address, "Ví Contract")
                         message = f'🚨 {wallet_name} ({wallet_address}) đã nhận được giao dịch'
                         send_telegram_notification(message, value, 0, tx_hash, blockchain)
 
@@ -412,13 +412,13 @@ def list_wallets(update, context):
 
     if wallets:
         eth_wallets = [w.split(':')[1] for w in wallets if w.startswith('eth')]
-        bnTON_WALLETs = [w.split(':')[1] for w in wallets if w.startswith('bnb')]
+        bnTON_VIs = [w.split(':')[1] for w in wallets if w.startswith('bnb')]
 
         message = "The following wallets are being monitored:\n"
         if eth_wallets:
             message += "\nEthereum Wallets:\n" + "\n".join(eth_wallets) + "\n"
-        if bnTON_WALLETs:
-            message += "\nBinance Smart Chain Wallets:\n" + "\n".join(bnTON_WALLETs)
+        if bnTON_VIs:
+            message += "\nBinance Smart Chain Wallets:\n" + "\n".join(bnTON_VIs)
 
         context.bot.send_message(chat_id=update.message.chat_id, text=message)
     else:
