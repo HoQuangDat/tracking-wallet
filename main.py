@@ -57,6 +57,8 @@ def get_wallet_transactions(wallet_address, blockchain):
         # Nếu địa chỉ là CONTRACT_ADDRESS, lấy toàn bộ giao dịch
         if wallet_address.lower() == CONTRACT_ADDRESS.lower():
             url = f'https://api.bscscan.com/api?module=account&action=txlist&address={wallet_address}&sort=desc&apikey={BSCSCAN_API_KEY}'
+        elif Web3.to_checksum_address(wallet_address) == MARKETING_VI:
+            url = f'https://api.bscscan.com/api?module=account&action=txlist&address={wallet_address}&sort=desc&apikey={BSCSCAN_API_KEY}'
         else:
             # Nếu là ví khác, chỉ lấy internal transactions liên quan đến CONTRACT_ADDRESS
             url = f'https://api.bscscan.com/api?module=account&action=txlistinternal&address={CONTRACT_ADDRESS}&sort=desc&apikey={BSCSCAN_API_KEY}'
