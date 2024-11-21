@@ -94,7 +94,7 @@ def send_telegram_notification(message, value, usd_value, tx_hash, blockchain):
     url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage'
     payload = {
         'chat_id': f'{TELEGRAM_CHAT_ID}',
-        'text': f'{message}: {value:.6f} {blockchain.upper()} (${usd_value:.2f}) \n {etherscan_link}',
+        'text': f'{message}: {value:.6f} {blockchain.upper()} \n {etherscan_link}',
         'parse_mode': 'HTML'
     }
     response = requests.post(url, data=payload)
@@ -313,10 +313,13 @@ def monitor_wallets():
                         #     process_incoming_transaction(wallet_address, value, blockchain)
                         # else:
                         # Gửi thông báo Telegram nếu có giao dịch liên quan đến ví đang theo dõi
-                        wallet_info = wallet_names.get(wallet_address, {"name": "Ví Contract", "percentage": 0})
+                        wallet_info = wallet_names.get(wallet_address, {"name": "Ví Contract", "percentage": ''})
                         wallet_name = wallet_info["name"]
                         wallet_percentage = wallet_info["percentage"]
-                        message = f'🚨 {wallet_name} ({wallet_percentage}) {wallet_address} đã nhận được giao dịch '
+                        if wallet_percentage:
+                            message = f'🚨 {wallet_name} ({wallet_percentage}) {wallet_address} đã nhận được giao dịch'
+                        else:
+                            message = f'🚨 {wallet_name} {wallet_address} đã nhận được giao dịch'
                         send_telegram_notification(message, value, 0, tx_hash, blockchain)
 
                         process_incoming_transaction(wallet_address, value, blockchain)
