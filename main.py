@@ -295,7 +295,8 @@ def monitor_wallets():
 
                 # Kiểm tra giao dịch liên quan đến CONTRACT_ADDRESS
                 transactions = get_wallet_transactions(wallet_address, blockchain)
-
+                
+                
                 # Khởi tạo danh sách giao dịch cho từng ví nếu chưa có
                 if wallet_address not in latest_tx_hashes:
                     latest_tx_hashes[wallet_address] = []
@@ -309,21 +310,21 @@ def monitor_wallets():
 
                     # Kiểm tra xem giao dịch đã được xử lý chưa
                     if tx_hash not in latest_tx_hashes[wallet_address] and tx_time > last_run_time:
-                        # if wallet_address == FOUNDATION_VI:
-                        #     process_incoming_transaction(wallet_address, value, blockchain)
-                        # else:
-                        # Gửi thông báo Telegram nếu có giao dịch liên quan đến ví đang theo dõi
+                        
+                        if Web3.to_checksum_address(wallet_address) == FOUNDATION_VI:
+                            print(f"Skipping notification for Foundation wallet ({wallet_address})")
+                            process_incoming_transaction(wallet_address, value, blockchain)
+                            latest_tx_hashes[wallet_address].append(tx_hash)
+                            continue
+                        
                         wallet_info = wallet_names.get(Web3.to_checksum_address(wallet_address), {"name": "Ví", "percentage": ''})
                         wallet_name = wallet_info["name"]
                         wallet_percentage = wallet_info["percentage"]
                         # print("WALLET", wallet_info)
-                        if Web3.to_checksum_address(wallet_address) == FOUNDATION_VI:
-                            print(f"Skipping notification for {wallet_address}")
+                        if wallet_percentage:
+                            message = f'🚨 {wallet_name} ({wallet_percentage}) {wallet_address} đã nhận được giao dịch'
                         else:
-                            if wallet_percentage:
-                                message = f'🚨 {wallet_name} ({wallet_percentage}) {wallet_address} đã nhận được giao dịch'
-                            else:
-                                message = f'🚨 {wallet_name} {wallet_address} đã nhận được giao dịch'
+                            message = f'🚨 {wallet_name} {wallet_address} đã nhận được giao dịch'
                         send_telegram_notification(message, value, 0, tx_hash, blockchain)
 
                         process_incoming_transaction(wallet_address, value, blockchain)
