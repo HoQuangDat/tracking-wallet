@@ -175,14 +175,14 @@ def distribute_from_dev_wallet(dev_total_value):
     Phân phối từ ví DEV_CHEAT theo tỷ lệ:
     - 12% cho ví A
     - 12% cho ví B
-    - 2.5% cho ví C
-    - Giữ lại 1% trong DEV_CHEAT_VI
+    - 3% cho ví C
+    - Giữ lại 0.5% trong DEV_CHEAT_VI
     """
-    # Tính toán số tiền cho từng ví
-    a_share = dev_total_value * 0.12  # 12%
-    b_share = dev_total_value * 0.12  # 12%
-    c_share = dev_total_value * 0.03  # 3%
-    remaining_share = dev_total_value * 0.005  # 0.5%
+    # Tính toán số tiền cho từng ví Tổng 4 ví là 100%
+    a_share = dev_total_value * 0.4364  # 43.64%
+    b_share = dev_total_value * 0.4364  # 43.64%
+    c_share = dev_total_value * 0.1091  # 10.91%
+    remaining_share = dev_total_value * 0.0181  # 1.81%
 
     # print(f"Distributing DEV_CHEAT funds: A={a_share} BNB, B={b_share} BNB, C={c_share} BNB, Remaining={remaining_share} BNB")
 
