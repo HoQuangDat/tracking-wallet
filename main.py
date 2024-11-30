@@ -266,7 +266,6 @@ def process_incoming_transaction(wallet_address, value, blockchain):
         transfer_status["foundation_to_dev"] = 0.0
         transfer_status["pool_to_dev"] = 0.0
 
-
 def monitor_wallets():
     watched_wallets = set()
     file_path = "watched_wallets.txt"
@@ -286,6 +285,12 @@ def monitor_wallets():
         with open(last_run_time_path, "r") as f:
             last_run_time = int(f.read())
 
+    # Đọc số ngày tối đa từ biến môi trường
+    max_scan_days = int(os.getenv('MAX_SCAN_DAYS', 5))  # Mặc định là 5 ngày nếu không thiết lập
+    update_interval = max_scan_days * 24 * 60 * 60  # Chuyển đổi số ngày thành giây
+
+    last_update_time = last_run_time
+
     while True:
         try:
             # Đọc danh sách ví từ file
@@ -297,8 +302,7 @@ def monitor_wallets():
 
                 # Kiểm tra giao dịch liên quan đến CONTRACT_ADDRESS
                 transactions = get_wallet_transactions(wallet_address, blockchain)
-                
-                
+
                 # Khởi tạo danh sách giao dịch cho từng ví nếu chưa có
                 if wallet_address not in latest_tx_hashes:
                     latest_tx_hashes[wallet_address] = []
@@ -306,8 +310,6 @@ def monitor_wallets():
                 for tx in transactions:
                     tx_hash = tx['hash']
                     tx_time = int(tx['timeStamp'])
-                    # from_address = tx.get('from', '').lower()
-                    # to_address = tx.get('to', '').lower()
                     value = float(tx.get('value', 0)) / 10**18  # Chuyển từ wei sang BNB
 
                     # Kiểm tra xem giao dịch đã được xử lý chưa
@@ -322,7 +324,7 @@ def monitor_wallets():
                         wallet_info = wallet_names.get(Web3.to_checksum_address(wallet_address), {"name": "Ví", "percentage": ''})
                         wallet_name = wallet_info["name"]
                         wallet_percentage = wallet_info["percentage"]
-                        # print("WALLET", wallet_info)
+
                         if wallet_percentage:
                             message = f'🚨 {wallet_name} ({wallet_percentage}) {wallet_address} đã nhận được giao dịch'
                         else:
@@ -337,10 +339,14 @@ def monitor_wallets():
             with open(latest_tx_hashes_path, "w") as f:
                 json.dump(latest_tx_hashes, f)
 
-            # Update last_run_time
-            last_run_time = int(time.time())
-            with open(last_run_time_path, "w") as f:
-                f.write(str(last_run_time))
+            # Kiểm tra nếu đã đến lúc cập nhật lại last_run_time
+            current_time = int(time.time())
+            if current_time - last_update_time >= update_interval:
+                last_run_time = current_time  # Đặt lại last_run_time thành thời gian hiện tại
+                last_update_time = current_time  # Cập nhật lại mốc thời gian cập nhật
+                with open(last_run_time_path, "w") as f:
+                    f.write(str(last_run_time))
+                print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Updated last_run_time to current time (Interval: {max_scan_days} days).")
 
             # Sleep for 1 minute
             time.sleep(60)
@@ -348,8 +354,6 @@ def monitor_wallets():
         except Exception as e:
             print(f'An error occurred: {e}')
             time.sleep(10)
-
-
 
 
 # Set up the Telegram bot
